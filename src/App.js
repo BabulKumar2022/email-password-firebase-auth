@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import {signInWithEmailAndPassword, createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import app from "./firebase.init";
@@ -37,19 +37,33 @@ function App() {
     }
       setValidated(true) 
       setError('');
+      if(registered){
+        signInWithEmailAndPassword(auth, email, passWord)
+        .then(result=>{
+          const user = result.user;
+          console.log(user)
+        })
+        .catch(error =>{
+          console.error(error);
+          setError(error.message);
+        })
+      }
+      else{
+        createUserWithEmailAndPassword(auth, email, passWord)
+        .then(result =>{
+          const user = result.user;
+          console.log(user)
+          setEmail('');
+          passWord('');
+        })
+        .catch(error =>{
+          console.error(error);
+          setError(error.message);
+        })
+         
+      }
 
-    createUserWithEmailAndPassword(auth, email, passWord)
-    .then(result =>{
-      const user = result.user;
-      console.log(user)
-      setEmail('');
-      passWord('');
-    })
-    .catch(error =>{
-      console.error(error);
-      setError(error.message);
-    })
-     
+   
      e.preventDefault();
    }
   return (
@@ -74,7 +88,7 @@ function App() {
             </Form.Group>
             <p className="text-danger">{error}</p>
             <Button variant="primary" type="submit">
-              Submit
+              {registered ? 'Login' : 'Register'}
             </Button>
         </Form>
       </div>
